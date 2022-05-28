@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.io.FileNotFoundException
+import java.util.*
 
 /**
  * Created by santoshsharma on 28 May, 2022
@@ -37,6 +38,20 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
         }
 
         return features;
+    }
+
+    /*
+    * Searches and loads Feature.
+    * 
+    * @param featureId - feature id to search in Feature
+    * @return Feature containing [featureId, timestamp, beginViewingDate, endViewingDate and missionName]
+    * @throw FeatureNotFoundException
+    * */
+    fun getFeatureById(featureId: UUID): FeatureCollection.Feature {
+        return getAllFeatures()
+            .filter { it.id == featureId }
+            .ifEmpty { throw FeatureNotFoundException("Feature Id $featureId not found") }
+            .first()
     }
 
 }
