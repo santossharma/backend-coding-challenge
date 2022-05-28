@@ -3,7 +3,9 @@ package com.up42.codingchallenge
 import com.up42.codingchallenge.domain.FeatureCollection
 import com.up42.codingchallenge.service.FeaturesService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,6 +25,18 @@ class FeaturesController(@Autowired var featureService: FeaturesService) {
     @GetMapping("/{featureId}")
     fun getFeatureById(@PathVariable featureId: UUID): FeatureCollection.Feature {
         return featureService.getFeatureById(featureId)
+    }
+
+    @GetMapping("/{featureId}/quicklook")
+    fun getFeatureQuickLookByFeatureId(@PathVariable featureId: UUID): ResponseEntity<Any> {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.IMAGE_PNG
+
+        return ResponseEntity(
+            featureService.getFeatureQuickLookByFeatureId(featureId),
+            headers,
+            HttpStatus.OK
+        )
     }
 
 }

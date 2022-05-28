@@ -4,6 +4,7 @@ import com.up42.codingchallenge.constant.FeatureConstants
 import com.up42.codingchallenge.domain.FeatureCollection
 import com.up42.codingchallenge.exception.FeatureNotFoundException
 import com.up42.codingchallenge.service.datareader.FeatureDataReader
+import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -52,6 +53,15 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
             .filter { it.id == featureId }
             .ifEmpty { throw FeatureNotFoundException("Feature Id $featureId not found") }
             .first()
+    }
+
+    /*
+    * Gets the image for feature id
+    * @param featureId - feature id to get the image
+    * @return base64 image read from base64 encoded string under quicklook field
+    * */
+    fun getFeatureQuickLookByFeatureId(featureId: UUID): ByteArray {
+        return Base64.decodeBase64(getFeatureById(featureId).properties?.quicklook);
     }
 
 }
