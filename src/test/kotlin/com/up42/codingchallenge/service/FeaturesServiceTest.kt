@@ -2,7 +2,6 @@ package com.up42.codingchallenge.service
 
 import com.up42.codingchallenge.byteArrayString
 import com.up42.codingchallenge.domain.FeatureCollection
-import com.up42.codingchallenge.service.datareader.FeatureDataReader
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -18,7 +17,6 @@ import java.util.*
  class FeaturesServiceTest {
 
     var featuresService: FeaturesService = mockk(relaxed = true)
-    var featureDataReader: FeatureDataReader = mockk()
 
     @BeforeAll
     fun setup() {
