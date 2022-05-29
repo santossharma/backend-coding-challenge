@@ -5,6 +5,7 @@ import com.up42.codingchallenge.domain.FeatureCollection
 import com.up42.codingchallenge.exception.FeatureNotFoundException
 import com.up42.codingchallenge.service.datareader.FeatureDataReader
 import org.apache.tomcat.util.codec.binary.Base64
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -22,6 +23,8 @@ import java.util.*
 @Service
 class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featureDataReader: FeatureDataReader) {
 
+    val logger = LoggerFactory.getLogger(this::class.java)
+
     /*
     * Loads all available features from [featureDataReader].
     *
@@ -33,6 +36,9 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
             features = featureDataReader.readFeatureData()
 
         } catch (ex: FileNotFoundException) {
+            if(logger.isInfoEnabled) {
+                logger.info("Feature data file not found")
+            }
             throw FeatureNotFoundException(FeatureConstants.FEATURE_DATA_FILE_NOT_FOUND)
         } catch (ex: Exception) {
             throw ex
@@ -49,6 +55,9 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
     * @throw FeatureNotFoundException
     * */
     fun getFeatureById(featureId: UUID): FeatureCollection.Feature {
+        if(logger.isInfoEnabled) {
+            logger.info("Searching Feature by id {}",featureId)
+        }
         return featureDataReader.readFeatureData()
             .filter { it.properties?.id == featureId }
             .ifEmpty { throw FeatureNotFoundException("Feature Id $featureId not found") }
@@ -61,6 +70,10 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
     * @return base64 image read from base64 encoded string under quicklook field
     * */
     fun getFeatureQuickLookByFeatureId(featureId: UUID): ByteArray {
+        if(logger.isInfoEnabled) {
+            logger.info("Searching Image by feature id {}",featureId)
+        }
+
         val quickLookByteArray = featureDataReader.readFeatureData()
             .filter { it.properties?.id == featureId }
             .map { it.properties?.quicklook }
