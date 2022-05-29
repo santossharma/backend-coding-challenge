@@ -49,8 +49,8 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
     * @throw FeatureNotFoundException
     * */
     fun getFeatureById(featureId: UUID): FeatureCollection.Feature {
-        return getAllFeatures()
-            .filter { it.id == featureId }
+        return featureDataReader.readFeatureData()
+            .filter { it.properties?.id == featureId }
             .ifEmpty { throw FeatureNotFoundException("Feature Id $featureId not found") }
             .first()
     }
@@ -61,7 +61,12 @@ class FeaturesService (@Autowired @Qualifier("fileFeatureDataReader") var featur
     * @return base64 image read from base64 encoded string under quicklook field
     * */
     fun getFeatureQuickLookByFeatureId(featureId: UUID): ByteArray {
-        return Base64.decodeBase64(getFeatureById(featureId).properties?.quicklook);
+        val quickLookByteArray = featureDataReader.readFeatureData()
+            .filter { it.properties?.id == featureId }
+            .map { it.properties?.quicklook }
+            .first().orEmpty()
+
+        return Base64.decodeBase64(quickLookByteArray);
     }
 
 }
