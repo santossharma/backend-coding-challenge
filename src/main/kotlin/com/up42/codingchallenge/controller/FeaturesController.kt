@@ -1,6 +1,7 @@
 package com.up42.codingchallenge
 
 import com.up42.codingchallenge.domain.FeatureCollection
+import com.up42.codingchallenge.service.FeatureModelAssembler
 import com.up42.codingchallenge.service.FeaturesService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.hateoas.EntityModel
 import java.util.*
 
 @RestController
 @RequestMapping("/features")
-class FeaturesController(@Autowired var featureService: FeaturesService) {
+class FeaturesController(@Autowired var featureService: FeaturesService,
+var featureModelAssembler: FeatureModelAssembler) {
 
     @GetMapping
     fun getFeatures(): ResponseEntity<List<FeatureCollection.Feature>> {
@@ -23,8 +26,8 @@ class FeaturesController(@Autowired var featureService: FeaturesService) {
     }
 
     @GetMapping("/{featureId}")
-    fun getFeatureById(@PathVariable featureId: UUID): FeatureCollection.Feature {
-        return featureService.getFeatureById(featureId)
+    fun getFeatureById(@PathVariable featureId: UUID): EntityModel<FeatureCollection.Feature> {
+        return featureModelAssembler.toModel(featureService.getFeatureById(featureId))
     }
 
     @GetMapping("/{featureId}/quicklook")
